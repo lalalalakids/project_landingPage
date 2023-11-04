@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>daftar buku perpustakaan</title>
+  </head>
+  <body>
+    <style>
+      :root {
+        --primary: hsl(182, 79%, 44%);
+        --gray: hsl(120, 49%, 46%);
+        --bg-body: rgb(248, 250, 252);
+        --paragraph-color: rgb(51, 65, 85);
+        --dark: rgb(58, 91, 168);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: var(--bg-body);
+        font-size: 1rem;
+        font-weight: 400;
+        color: var(--paragraph-color);
+      }
+
+      .wrapper {
+        width: min(100% - 2rem, 800px);
+        margin-inline: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .top,
+      .bottom {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+
+      .form-container,
+      .cari-container,
+      .left-container,
+      .right-container {
+        padding: 1rem;
+        background: s#e408ad;
+        border-radius: 1rem;
+        width: 90%;
+        box-shadow: 0 4px 8px rgba(38, 73, 156, 0.1);
+      }
+
+      .form-container {
+        width: 70%;
+      }
+
+      .cari-container {
+        width: 60%;
+      }
+
+      header {
+        width: 110%;
+        padding: 1rem;
+        text-align: center;
+      }
+
+      .title {
+        margin-bottom: 1rem;
+        font-weight: 650;
+        font-size: 1.25rem;
+      }
+
+      .form-group {
+        position: relative;
+        margin-bottom: 0.75rem;
+      }
+
+      .form-group input {
+        border: 1px solid var(--gray);
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        width: 100%;
+        font-size: 1rem;
+        outline: none;
+      }
+
+      .form-group label {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray);
+        transition: 0.3s;
+        cursor: text;
+      }
+
+      .form-group input:not(:placeholder-shown),
+      .form-group input:focus {
+        border: 2px solid var(--primary);
+      }
+
+      .form-group input:not(:placeholder-shown) ~ label,
+      .form-group input:focus ~ label {
+        top: 0;
+        left: 0.75rem;
+        color: var(--primary);
+        padding: 0 0.25rem;
+        background-color: #3bb9af;
+        font-size: 15px;
+      }
+
+      .form-search-bottom {
+        display: flex;
+        justify-content: end;
+        gap: 0.25rem;
+      }
+
+      .submit-btn {
+        border: none;
+        outline: none;
+        background-color: var(--primary);
+        color: #4e832a;
+        font-weight: 680;
+        float: right;
+        padding: 0.5rem 2rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .submit-btn:hover,
+      .cari-btn:hover {
+        background-color: hsl(214, 62%, 48%);
+      }
+
+      .form-check {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .form-check label {
+        color: var(--primary);
+      }
+
+      .form-check input,
+      .form-check label {
+        cursor: pointer;
+      }
+
+      .item {
+        border: 1px solid var(--gray);
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+      }
+
+      .item-title {
+        color: var(--primary);
+      }
+
+      .item-title span {
+        color: var(--paragraph-color);
+      }
+
+      .item-writer {
+        font-weight: 400;
+        font-size: 14px;
+      }
+
+      .item-action {
+        display: flex;
+        gap: 0.25rem;
+      }
+
+      .hapus-btn,
+      .selesai-btn,
+      .kembalikan-btn,
+      .reset-btn,
+      .cari-btn {
+        padding: 0.25rem 0.5rem;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        transition: 0.3s;
+        color: #29cc3f;
+        font-size: 1.25rem;
+        border-radius: 0.25rem;
+      }
+
+      .cari-btn {
+        background-color: var(--primary);
+      }
+
+      .reset-btn {
+        background-color: var(--gray);
+      }
+
+      .reset-btn:hover {
+        background-color: hsl(215, 20%, 55%);
+      }
+
+      .hapus-btn {
+        background-color: #a53e6e;
+      }
+
+      .hapus-btn:hover {
+        background-color: hsl(283, 51%, 41%);
+      }
+
+      .selesai-btn {
+        background-color: #22c55e;
+      }
+
+      .selesai-btn:hover {
+        background-color: hsl(142, 71%, 40%);
+      }
+
+      .kembalikan-btn {
+        background-color: #7dbe6d;
+      }
+
+      .kembalikan-btn:hover {
+        background-color: hsl(48, 40%, 61%);
+      }
+
+      .alert {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1rem;
+        color: #fff;
+        z-index: 100;
+        background-color: #4d8d64b0;
+        transition: 0.5s;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .row {
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      @media screen and (max-width: 572px) {
+        .top,
+        .bottom {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .form-container {
+          width: 90%;
+        }
+
+        .cari-container {
+          width: 100%;
+        }
+
+        .row {
+          flex-direction: column;
+          gap: 0;
+        }
+      }
+    </style>
+
+    <script>
+      const RENDER_EVENT = "render-book";
+      const SAVED_EVENT = "saved-book";
+      const MOVED_EVENT = "moved-book";
+      const DELETED_EVENT = "deleted-book";
+      const STORAGE_KEY = "BOOKSHELF_APPS";
+      const books = [];
+
+      const isStorageExist = () => {
+        if (typeof Storage === undefined) {
+          alert("Browser  tidak mendukung web ini");
+          return false;
+        }
+        return true;
+      };
+
+      document.addEventListener(RENDER_EVENT, () => {
+        const unfinishedBook = document.getElementById("belumDibaca");
+        unfinishedBook.innerHTML = "";
+
+        const finishedBook = document.getElementById("sudahDibaca");
+        finishedBook.innerHTML = "";
+
+        for (const bookItem of books) {
+          const bookElement = makeBookElement(bookItem);
+          if (!bookItem.isComplete) {
+            unfinishedBook.append(bookElement);
+          } else {
+            finishedBook.append(bookElement);
+          }
+        }
+      });
+
+      document.addEventListener(SAVED_EVENT, () => {
+        const elementCustomAlert = document.createElement("div");
+        elementCustomAlert.classList.add("alert");
+        elementCustomAlert.innerText = "buku anda Berhasil Disimpan!";
+
+        document.body.insertBefore(
+          elementCustomAlert,
+          document.body.children[0]
+        );
+        setTimeout(() => {
+          elementCustomAlert.remove();
+        }, 2000);
+      });
+
+      document.addEventListener(MOVED_EVENT, () => {
+        const elementCustomAlert = document.createElement("div");
+        elementCustomAlert.classList.add("alert");
+        elementCustomAlert.innerText = "Berhasil Dipindahkan!";
+
+        document.body.insertBefore(
+          elementCustomAlert,
+          document.body.children[0]
+        );
+        setTimeout(() => {
+          elementCustomAlert.remove();
+        }, 2000);
+      });
+
+      document.addEventListener(DELETED_EVENT, () => {
+        const elementCustomAlert = document.createElement("div");
+        elementCustomAlert.classList.add("alert");
+        elementCustomAlert.innerText = "Berhasil Dihapus!";
+
+        document.body.insertBefore(
+          elementCustomAlert,
+          document.body.children[0]
+        );
+        setTimeout(() => {
+          elementCustomAlert.remove();
+        }, 2000);
+      });
+
+      const loadDataFromStorage = () => {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+        if (data !== null) {
+          for (const item of data) {
+            books.push(item);
+          }
+        }
+
+        document.dispatchEvent(new Event(RENDER_EVENT));
+      };
+
+      const saveData = () => {
+        if (isStorageExist()) {
+          const parsed = JSON.stringify(books);
+          localStorage.setItem(STORAGE_KEY, parsed);
+          document.dispatchEvent(new Event(SAVED_EVENT));
+        }
+      };
+
+      const moveData = () => {
+        if (isStorageExist()) {
+          const parsed = JSON.stringify(books);
+          localStorage.setItem(STORAGE_KEY, parsed);
+          document.dispatchEvent(new Event(MOVED_EVENT));
+        }
+      };
+
+      const deleteData = () => {
+        if (isStorageExist()) {
+          const parsed = JSON.stringify(books);
+          localStorage.setItem(STORAGE_KEY, parsed);
+          document.dispatchEvent(new Event(DELETED_EVENT));
+        }
+      };
+
+      const addBook = () => {
+        const bookTitle = document.getElementById("judul");
+        const bookAuthor = document.getElementById("penulis");
+        const bookYear = document.getElementById("tahun");
+        const bookHasFinished = document.getElementById("isRead");
+        let bookStatus;
+
+        if (bookHasFinished.checked) {
+          bookStatus = true;
+        } else {
+          bookStatus = false;
+        }
+
+        books.push({
+          id: +new Date(),
+          title: bookTitle.value,
+          author: bookAuthor.value,
+          year: Number(bookYear.value),
+          isComplete: bookStatus,
+        });
+
+        bookTitle.value = null;
+        bookAuthor.value = null;
+        bookYear.value = null;
+        bookHasFinished.checked = false;
+
+        document.dispatchEvent(new Event(RENDER_EVENT));
+        saveData();
+      };
+
+      const makeBookElement = (bookObject) => {
+        const elementBookTitle = document.createElement("p");
+        elementBookTitle.classList.add("item-title");
+        elementBookTitle.innerHTML = `${bookObject.title} <span>(${bookObject.year})</span>`;
+
+        const elementBookAuthor = document.createElement("p");
+        elementBookAuthor.classList.add("item-writer");
+        elementBookAuthor.innerText = bookObject.author;
+
+        const descContainer = document.createElement("div");
+        descContainer.classList.add("item-desc");
+        descContainer.append(elementBookTitle, elementBookAuthor);
+
+        const actionContainer = document.createElement("div");
+        actionContainer.classList.add("item-action");
+
+        const container = document.createElement("div");
+        container.classList.add("item");
+        container.append(descContainer);
+        container.setAttribute("id", `book-${bookObject.id}`);
+
+        if (bookObject.isComplete) {
+          const returnBtn = document.createElement("button");
+          returnBtn.classList.add("kembalikan-btn");
+          returnBtn.innerHTML = `<i class='bx bx-undo'></i>`;
+
+          returnBtn.addEventListener("click", () => {
+            returnBookFromFinished(bookObject.id);
+          });
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.classList.add("hapus-btn");
+          deleteBtn.innerHTML = `<i class='bx bx-trash'></i>`;
+
+          deleteBtn.addEventListener("click", () => {
+            deleteBook(bookObject.id);
+          });
+
+          actionContainer.append(returnBtn, deleteBtn);
+          container.append(actionContainer);
+        } else {
+          const finishBtn = document.createElement("button");
+          finishBtn.classList.add("selesai-btn");
+          finishBtn.innerHTML = `<i class='bx bx-check'></i>`;
+
+          finishBtn.addEventListener("click", () => {
+            addBookToFinished(bookObject.id);
+          });
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.classList.add("hapus-btn");
+          deleteBtn.innerHTML = `<i class='bx bx-trash'></i>`;
+
+          deleteBtn.addEventListener("click", () => {
+            deleteBook(bookObject.id);
+          });
+
+          actionContainer.append(finishBtn, deleteBtn);
+          container.append(actionContainer);
+        }
+
+        return container;
+      };
+
+      const addBookToFinished = (bookId) => {
+        const bookTarget = findBook(bookId);
+
+        if (bookTarget == null) return;
+
+        bookTarget.isComplete = true;
+        document.dispatchEvent(new Event(RENDER_EVENT));
+        moveData();
+      };
+
+      const returnBookFromFinished = (bookId) => {
+        const bookTarget = findBook(bookId);
+
+        if (bookTarget == null) return;
+
+        bookTarget.isComplete = false;
+        document.dispatchEvent(new Event(RENDER_EVENT));
+        moveData();
+      };
+
+      const deleteBook = (bookId) => {
+        const bookTarget = findBookIndex(bookId);
+
+        if (bookTarget === -1) return;
+
+        books.splice(bookTarget, 1);
+        document.dispatchEvent(new Event(RENDER_EVENT));
+        deleteData();
+      };
+
+      const findBook = (bookId) => {
+        for (const bookItem of books) {
+          if (bookItem.id === bookId) {
+            return bookItem;
+          }
+        }
+
+        return null;
+      };
+
+      const findBookIndex = (bookId) => {
+        for (const index in books) {
+          if (books[index].id === bookId) {
+            return index;
+          }
+        }
+
+        return -1;
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        if (isStorageExist()) {
+          loadDataFromStorage();
+        }
+
+        const simpanForm = document.getElementById("formDataBuku");
+        simpanForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+          addBook();
+        });
+
+        const searchForm = document.getElementById("formSearch");
+        searchForm.addEventListener("submit", (event) => {
+          event.preventDefault();
+          searchBook();
+        });
+
+        const resetBtn = document.querySelector(".reset-btn");
+        resetBtn.addEventListener("click", () => {
+          document.getElementById("pencarian").value = "";
+          searchBook();
+        });
+      });
+
+      const searchBook = () => {
+        const searchInput = document
+          .getElementById("pencarian")
+          .value.toLowerCase();
+        const bookItems = document.getElementsByClassName("item");
+
+        for (let i = 0; i < bookItems.length; i++) {
+          const itemTitle = bookItems[i].querySelector(".item-title");
+          if (itemTitle.textContent.toLowerCase().includes(searchInput)) {
+            bookItems[i].classList.remove("hidden");
+          } else {
+            bookItems[i].classList.add("hidden");
+          }
+        }
+      };
+    </script>
+    <div class="wrapper">
+      <header>
+        <h1>Buku perpustakaan</h1>
+      </header>
+      <div class="top">
+        <div class="form-container">
+          <h2 class="title">Tambah Buku Baru</h2>
+          <form id="formDataBuku" action="" method="post">
+            <div class="form-group">
+              <input type="text" name="judul" id="judul" placeholder="" />
+              <label for="judul">Judul buku</label>
+            </div>
+            <div class="row">
+              <div class="form-group">
+                <input type="text" name="penulis" id="penulis" placeholder="" />
+                <label for="penulis">Penulis buku</label>
+              </div>
+              <div class="form-group">
+                <input
+                  type="numbe
+                            r"
+                  name="tahun"
+                  id="tahun"
+                  placeholder=""
+                />
+                <label for="tahun">Tahun buku</label>
+              </div>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" name="isRead" id="isRead" placeholder="" />
+              <label for="isRead">Sudah selesai dibaca</label>
+            </div>
+            <button type="submit" class="submit-btn">Simpan</button>
+          </form>
+        </div>
+        <div class="cari-container">
+          <h2 class="title">Cari Buku anda</h2>
+          <form id="formSearch" action="" method="post">
+            <div class="form-group">
+              <input
+                type="text"
+                name="pencarian"
+                id="pencarian"
+                placeholder=""
+              />
+              <label for="pencarian">Cari Buku anda</label>
+            </div>
+            <div class="form-search-bottom">
+              <button type="reset" class="reset-btn">
+                <i class="bx bx-reset"></i>
+              </button>
+              <button type="submit" class="cari-btn">
+                <i class="bx bx-search-alt-2"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="bottom">
+        <div class="left-container">
+          <h2 class="title">Buku Belum Dibaca</h2>
+          <div id="belumDibaca"></div>
+        </div>
+        <div class="right-container">
+          <h2 class="title">Buku Sudah Dibaca</h2>
+          <div id="sudahDibaca"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>
